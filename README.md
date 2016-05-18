@@ -34,3 +34,18 @@ Usage
 -----
 
 This extension provides some tools for the secure connection (https) handling.
+
+Application configuration example:
+
+```php
+return [
+    'as https' => [
+        'class' => 'yii2tech\https\SecureConnectionFilter',
+        'secureOnly' => [
+            'site/login',
+            'site/signup',
+        ],
+    ],
+    // ...
+];
+```

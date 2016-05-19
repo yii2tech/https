@@ -78,6 +78,8 @@ class SecureConnectionFilter extends ActionFilter
      * Note that if the filter is attached to a module, the action IDs should also include child module IDs (if any)
      * and controller IDs.
      *
+     * Action IDs can be specified as wildcards, e.g. `auth/*`.
+     *
      * @see secureExcept
      */
     public $secureOnly;
@@ -146,7 +148,28 @@ class SecureConnectionFilter extends ActionFilter
     protected function isSecure($action)
     {
         $id = $this->getActionId($action);
-        return !in_array($id, $this->secureExcept, true) && (empty($this->secureOnly) || in_array($id, $this->secureOnly, true));
+
+        if (empty($this->secureOnly)) {
+            $onlyMatch = true;
+        } else {
+            $onlyMatch = false;
+            foreach ($this->secureOnly as $pattern) {
+                if (fnmatch($pattern, $id)) {
+                    $onlyMatch = true;
+                    break;
+                }
+            }
+        }
+
+        $exceptMatch = false;
+        foreach ($this->secureExcept as $pattern) {
+            if (fnmatch($pattern, $id)) {
+                $exceptMatch = true;
+                break;
+            }
+        }
+
+        return !$exceptMatch && $onlyMatch;
     }
 
     /**

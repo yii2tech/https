@@ -49,14 +49,40 @@ class SecureConnectionFilterTest extends TestCase
         $filter->secureOnly = ['test'];
         $action->id = 'test';
         $this->assertTrue($this->invoke($filter, 'isSecure', [$action]));
-        $action->id = 'foo';
+        $action->id = 'tester';
         $this->assertFalse($this->invoke($filter, 'isSecure', [$action]));
 
         $filter = new SecureConnectionFilter();
         $filter->secureExcept = ['test'];
         $action->id = 'test';
         $this->assertFalse($this->invoke($filter, 'isSecure', [$action]));
-        $action->id = 'foo';
+        $action->id = 'tester';
+        $this->assertTrue($this->invoke($filter, 'isSecure', [$action]));
+    }
+
+    /**
+     * @depends testIsSecure
+     */
+    public function testIsSecureWildcard()
+    {
+        $action = $this->mockAction();
+
+        $filter = new SecureConnectionFilter();
+        $filter->secureOnly = ['test/*'];
+        $action->id = 'test/foo';
+        $this->assertTrue($this->invoke($filter, 'isSecure', [$action]));
+        $action->id = 'test';
+        $this->assertFalse($this->invoke($filter, 'isSecure', [$action]));
+        $action->id = 'test';
+        $this->assertFalse($this->invoke($filter, 'isSecure', [$action]));
+
+        $filter = new SecureConnectionFilter();
+        $filter->secureExcept = ['test/*'];
+        $action->id = 'test/foo';
+        $this->assertFalse($this->invoke($filter, 'isSecure', [$action]));
+        $action->id = 'foo/test';
+        $this->assertTrue($this->invoke($filter, 'isSecure', [$action]));
+        $action->id = 'foo/some';
         $this->assertTrue($this->invoke($filter, 'isSecure', [$action]));
     }
 

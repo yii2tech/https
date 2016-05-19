@@ -11,9 +11,53 @@ use Yii;
 use yii\base\Action;
 use yii\base\ActionFilter;
 use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
 
 /**
- * SecureConnectionFilter
+ * SecureConnectionFilter is an action filter, which performs automatic redirection from 'http' to 'https' protocol
+ * depending of which one is required by particular action.
+ *
+ * This filter can be used at module (application) level or at controller level.
+ *
+ * Application configuration example:
+ *
+ * ```php
+ * return [
+ *     'as https' => [
+ *         'class' => 'yii2tech\https\SecureConnectionFilter',
+ *         'secureOnly' => [
+ *             'site/login',
+ *             'site/signup',
+ *         ],
+ *     ],
+ *     // ...
+ * ];
+ * ```
+ *
+ * Controller configuration example:
+ *
+ * ```php
+ * use yii\web\Controller;
+ * use yii2tech\https\SecureConnectionFilter;
+ *
+ * class SiteController extends Controller
+ * {
+ *     public function behaviors()
+ *     {
+ *         return [
+ *             'https' => [
+ *                 'class' => SecureConnectionFilter::className(),
+ *                 'secureOnly' => [
+ *                     'login',
+ *                     'signup',
+ *                 ],
+ *             ],
+ *         ];
+ *     }
+ *
+ *     // ...
+ * }
+ * ```
  *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
@@ -42,6 +86,12 @@ class SecureConnectionFilter extends ActionFilter
      * @see secureOnly
      */
     public $secureExcept = [];
+    /**
+     * @var array list of request methods, which should allow page redirection in case wrong protocol is used.
+     * For all not listed request methods `BadRequestHttpException` will be thrown for secure action, while
+     * not secure ones will be allowed to be performed via secured protocol.
+     */
+    public $readRequestMethods = ['GET', 'OPTIONS'];
 
 
     /**
@@ -54,18 +104,27 @@ class SecureConnectionFilter extends ActionFilter
         }
 
         if ($this->isSecure($action)) {
+            // https only :
             if (Yii::$app->getRequest()->getIsSecureConnection()) {
                 return true;
             }
-            $this->redirect();
-            return false;
+
+            if ($this->isReadRequestMethod()) {
+                $this->redirect();
+                return false;
+            }
+            throw new BadRequestHttpException();
         }
 
+        // https not required :
         if (!Yii::$app->getRequest()->getIsSecureConnection()) {
             return true;
         }
-        $this->redirect();
-        return false;
+        if ($this->isReadRequestMethod()) {
+            $this->redirect();
+            return false;
+        }
+        return true; // allow form submission via secure protocol
     }
 
     /**
@@ -88,6 +147,14 @@ class SecureConnectionFilter extends ActionFilter
     {
         $id = $this->getActionId($action);
         return !in_array($id, $this->secureExcept, true) && (empty($this->secureOnly) || in_array($id, $this->secureOnly, true));
+    }
+
+    /**
+     * @return boolean whether current web request method is considered as 'read' type.
+     */
+    protected function isReadRequestMethod()
+    {
+        return in_array(Yii::$app->getRequest()->getMethod(), $this->readRequestMethods, true);
     }
 
     /**

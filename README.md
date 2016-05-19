@@ -49,3 +49,28 @@ return [
     // ...
 ];
 ```
+
+Controller configuration example:
+
+```php
+use yii\web\Controller;
+use yii2tech\https\SecureConnectionFilter;
+
+class SiteController extends Controller
+{
+    public function behaviors()
+    {
+        return [
+            'https' => [
+                'class' => SecureConnectionFilter::className(),
+                'secureOnly' => [
+                    'login',
+                    'signup',
+                ],
+            ],
+        ];
+    }
+
+    // ...
+}
+```

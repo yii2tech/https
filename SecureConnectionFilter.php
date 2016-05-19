@@ -14,7 +14,7 @@ use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 
 /**
- * SecureConnectionFilter is an action filter, which performs automatic redirection from 'http' to 'https' protocol
+ * SecureConnectionFilter is an action filter, which performs automatic redirection from 'http' to 'https' protocol,
  * depending of which one is required by particular action.
  *
  * This filter can be used at module (application) level or at controller level.

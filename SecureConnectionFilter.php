@@ -94,6 +94,10 @@ class SecureConnectionFilter extends ActionFilter
      * not secure ones will be allowed to be performed via secured protocol.
      */
     public $readRequestMethods = ['GET', 'OPTIONS'];
+    /**
+     * @var integer the HTTP status code, which should be used in redirection.
+     */
+    public $redirectStatusCode = 301;
 
 
     /**
@@ -187,6 +191,6 @@ class SecureConnectionFilter extends ActionFilter
     protected function redirect()
     {
         $schema = Yii::$app->getRequest()->getIsSecureConnection() ? 'http' : 'https';
-        return Yii::$app->getResponse()->redirect(Url::current([], $schema));
+        return Yii::$app->getResponse()->redirect(Url::current([], $schema), $this->redirectStatusCode);
     }
 }

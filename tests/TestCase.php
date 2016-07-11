@@ -16,6 +16,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
         $_SERVER['SCRIPT_FILENAME'] = '/index.php';
         $_SERVER['SCRIPT_NAME'] = '/index.php';
+        $_SERVER['HTTP_HOST'] = 'domain.com';
 
         $this->mockWebApplication();
     }

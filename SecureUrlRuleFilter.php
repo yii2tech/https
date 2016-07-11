@@ -10,13 +10,12 @@ namespace yii2tech\https;
 use Yii;
 use yii\base\ActionFilter;
 use yii\base\InvalidConfigException;
-use yii\web\UrlManager;
 use yii\web\UrlRule;
 
 /**
- * SecureUrlRuleFilter is an action filter, which adjusts [[UrlManager::rules]] to automatically create URLs with
+ * SecureUrlRuleFilter is an action filter, which adjusts [[\yii\web\UrlManager::rules]] to automatically create URLs with
  * correct protocol 'http' or 'https'.
- * After being applied it ensures [[UrlManager::createUrl()]] will automatically create absolute URL with leading protocol
+ * After being applied it ensures [[\yii\web\UrlManager::createUrl()]] will automatically create absolute URL with leading protocol
  * in case it miss matches current one.
  *
  * This filter can be used at module (application) level or at controller level.
@@ -59,13 +58,13 @@ class SecureUrlRuleFilter extends ActionFilter
      */
     public $enabled = true;
     /**
-     * @var string|UrlManager URL manager to be processed. This can be either instance of [[UrlManager]] or
+     * @var string|\yii\web\UrlManager URL manager to be processed. This can be either instance of [[\yii\web\UrlManager]] or
      * corresponding application component name.
      */
     public $urlManager = 'urlManager';
     /**
      * @var array list of the URL routes, which should be secure-only ('https' protocol).
-     * Routes should be specified in the same way they are used in [[UrlManager::rules]], including placeholders
+     * Routes should be specified in the same way they are used in [[\yii\web\UrlManager::rules]], including placeholders
      * like `<controller>` and `<action>`. Route can be specified as wildcards, e.g. `auth/*`.
      * For example:
      *
@@ -83,7 +82,7 @@ class SecureUrlRuleFilter extends ActionFilter
     public $secureOnlyRoutes = [];
     /**
      * @var array list of the URL routes, which should not be secure ('http' protocol).
-     * Routes should be specified in the same way they are used in [[UrlManager::rules]], including placeholders
+     * Routes should be specified in the same way they are used in [[\yii\web\UrlManager::rules]], including placeholders
      * like `<controller>` and `<action>`. Route can be specified as wildcards, e.g. `auth/*`.
      * For example:
      *
@@ -138,8 +137,8 @@ class SecureUrlRuleFilter extends ActionFilter
     }
 
     /**
-     * Returns [[UrlManager]] corresponding to [[urlManager]] value.
-     * @return UrlManager URL manager instance.
+     * Returns [[\yii\web\UrlManager]] corresponding to [[urlManager]] value.
+     * @return \yii\web\UrlManager URL manager instance.
      * @throws InvalidConfigException on invalid [[urlManager]].
      */
     protected function getUrlManager()

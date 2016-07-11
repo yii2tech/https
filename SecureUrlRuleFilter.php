@@ -42,7 +42,7 @@ use yii\web\UrlRule;
  *
  * Note: this filter will take affect only if [[UrlManager::enablePrettyUrl]] is enabled.
  *
- * Attention: once applied this filter changes the state of related [[UrlManager]], this make break some features,
+ * Attention: once applied this filter changes the state of related [[UrlManager]], this may break some features,
  * like parsing URL.
  *
  * @see UrlManager

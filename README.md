@@ -89,3 +89,62 @@ You may use this to skip some actions from the secure connection processing.
 **Heads up!** Be aware of the forms, which may appear at on protocol but require submission to the other.
 Request body can not be transferred during redirect, so submitted data will be lost. You'll have to setup
 form action manually with the correct schema, instead of relying on the filter.
+
+
+## Automatic URL creation <span id="automatic-url-creation"></span>
+
+Using simple redirect from one protocol to another is not efficient and have a risk of loosing data submitted via
+web form. Thus it is better to explicitly specify URL with correct protocol in your views.
+You may simplify this process using [[\yii2tech\https\SecureUrlRuleFilter]] action filter. Once applied it will adjust
+[[\yii\web\UrlManager::rules]] in the way [[\yii\web\UrlManager::createUrl()]] method will automatically create
+absolute URL with correct protocol in case it miss matches current one.
+
+Application configuration example:
+
+```php
+return [
+    'as secureUrlRules' => [
+        'class' => 'yii2tech\https\SecureUrlRuleFilter',
+        'secureOnlyRoutes' => [
+            'auth/login',
+            'site/signup',
+        ],
+        'secureExceptRoutes' => [
+            'site/index',
+            'help/<action>',
+        ],
+    ],
+    'components' => [
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+                '/' => 'site/index',
+                'login' => 'auth/login',
+                'signup' => 'site/signup',
+                '<action:contact|faq>' => 'help/<action>',
+            ]
+        ],
+    ],
+    // ...
+];
+```
+
+Now [[\yii\web\UrlManager::createUrl()]] will create URLs with correct protocol without extra efforts:
+
+```php
+if (Yii::$app->request->isSecureConnection) {
+    echo Yii::$app->urlManager->createUrl(['site/index']); // outputs: 'http://domain.com/'
+    echo Yii::$app->urlManager->createUrl(['auth/login']); // outputs: '/login'
+} else {
+    echo Yii::$app->urlManager->createUrl(['site/index']); // outputs: '/'
+    echo Yii::$app->urlManager->createUrl(['auth/login']); // outputs: 'https://domain.com/login'
+}
+```
+
+> Note: [[\yii2tech\https\SecureUrlRuleFilter]] filter will take affect only if
+  [[\yii\web\UrlManager::enablePrettyUrl]] is enabled.
+
+**Heads up!** once applied [[\yii2tech\https\SecureUrlRuleFilter]] filter changes the state of related
+[[\yii\web\UrlManager::UrlManager]] instance, which may make unexpected side effects. For example: this may
+break such features as parsing URL.

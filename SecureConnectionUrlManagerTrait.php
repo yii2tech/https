@@ -34,6 +34,13 @@ use Yii;
 trait SecureConnectionUrlManagerTrait
 {
     /**
+     * @var boolean|callable whether the automatic creation of secure/un-secure URLs for [[secureOnlyRoutes]]
+     * and [[secureExceptRoutes]] is enabled.
+     * You may use this field for quick disabling of this functionality, based on debug mode or environment.
+     * This value can be a callable, which returns actual boolean result for the check.
+     */
+    public $enableAutoSecureRoutes = true;
+    /**
      * @var array list of the URL routes, which should be secure-only ('https' protocol).
      * Route can be specified as wildcards, e.g. `auth/*`.
      * For example:
@@ -64,6 +71,19 @@ trait SecureConnectionUrlManagerTrait
 
 
     /**
+     * Initializes UrlManager.
+     * @see \yii\web\UrlManager::init()
+     */
+    public function init()
+    {
+        parent::init();
+
+        if (!is_bool($this->enableAutoSecureRoutes)) {
+            $this->enableAutoSecureRoutes = call_user_func($this->enableAutoSecureRoutes);
+        }
+    }
+
+    /**
      * Creates a URL using the given route and query parameters.
      *
      * @see \yii\web\UrlManager::createUrl()
@@ -77,7 +97,7 @@ trait SecureConnectionUrlManagerTrait
         /* @var $this \yii\web\UrlManager|SecureConnectionUrlManagerTrait */
         $url = parent::createUrl($params);
 
-        if (strpos($url, '://') === false) {
+        if ($this->enableAutoSecureRoutes && strpos($url, '://') === false) {
             $route = trim($params[0], '/');
 
             if (Yii::$app->getRequest()->getIsSecureConnection()) {

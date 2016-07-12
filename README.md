@@ -148,3 +148,55 @@ if (Yii::$app->request->isSecureConnection) {
 **Heads up!** once applied [[\yii2tech\https\SecureUrlRuleFilter]] filter changes the state of related
 [[\yii\web\UrlManager::UrlManager]] instance, which may make unexpected side effects. For example: this may
 break such features as parsing URL.
+
+The more reliable way for automatic URL creation is usage of [[\yii2tech\https\SecureConnectionUrlManagerTrait]].
+Being used with the descendant of the [[\yii\web\UrlManager]] it will adjust `createUrl()` method so it will behave
+exactly the same as in example above.
+
+Trait usage example:
+
+```php
+namespace app\components\web;
+
+use yii2tech\https\SecureConnectionUrlManagerTrait;
+
+class MyUrlManager extends \yii\web\UrlManager
+{
+    use SecureConnectionUrlManagerTrait;
+}
+```
+
+Application configuration example:
+
+```php
+return [
+    'components' => [
+        'urlManager' => [
+            'class' => 'app\components\web\MyUrlManager',
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' => [
+                '/' => 'site/index',
+                'login' => 'auth/login',
+                'signup' => 'site/signup',
+                '<action:contact|faq>' => 'help/<action>',
+            ],
+            'secureOnlyRoutes' => [
+                'site/signup',
+                'auth/*',
+            ],
+            'secureExceptRoutes' => [
+                'site/index',
+                'help/*',
+            ],
+        ],
+    ],
+    // ...
+];
+```
+
+In case you do not use any custom URL manager in your project you can use [[\yii2tech\https\UrlManager]], which already
+have [[\yii2tech\https\SecureConnectionUrlManagerTrait]] applied.
+
+> Note: usage of [[\yii2tech\https\SecureConnectionUrlManagerTrait]] is more reliable then [[\yii2tech\https\SecureUrlRuleFilter]],
+  but it may consume more computing resources at some cases. Still it is recommended to use trait instead of filter.

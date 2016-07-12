@@ -200,3 +200,7 @@ have [[\yii2tech\https\SecureConnectionUrlManagerTrait]] applied.
 
 > Note: usage of [[\yii2tech\https\SecureConnectionUrlManagerTrait]] is more reliable then [[\yii2tech\https\SecureUrlRuleFilter]],
   but it may consume more computing resources at some cases. Still it is recommended to use trait instead of filter.
+
+> Note: [[\yii2tech\https\SecureConnectionUrlManagerTrait]] and [[\yii2tech\https\SecureUrlRuleFilter]] process routes
+  in the different way: filter uses those defined by URL rules, while trait operates exact route names as they passed
+  to `createUrl()` method.

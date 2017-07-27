@@ -1,5 +1,10 @@
-Secure connection (https) handling extension for Yii2
-=====================================================
+<p align="center">
+    <a href="https://github.com/yii2tech" target="_blank">
+        <img src="https://avatars2.githubusercontent.com/u/12951949" height="100px">
+    </a>
+    <h1 align="center">Secure connection (https) handling extension for Yii2</h1>
+    <br>
+</p>
 
 This extension provides some tools for the secure connection (https) handling.
 
@@ -146,7 +151,7 @@ if (Yii::$app->request->isSecureConnection) {
   [[\yii\web\UrlManager::enablePrettyUrl]] is enabled.
 
 **Heads up!** once applied [[\yii2tech\https\SecureUrlRuleFilter]] filter changes the state of related
-[[\yii\web\UrlManager::UrlManager]] instance, which may make unexpected side effects. For example: this may
+[[\yii\web\UrlManager]] instance, which may make unexpected side effects. For example: this may
 break such features as parsing URL.
 
 The more reliable way for automatic URL creation is usage of [[\yii2tech\https\SecureConnectionUrlManagerTrait]].
